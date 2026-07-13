@@ -1,6 +1,22 @@
+from flask import Flask
+from threading import Thread
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
+# --- جزء يخلي Render يشوف البوت "حي" ---
+app_web = Flask('')
+
+@app_web.route('/')
+def home():
+    return "Bot is alive"
+
+def run():
+    app_web.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    Thread(target=run).start()
+
+# --- جزء البوت ---
 TABLE = {
     '0': 'f', '1': 'e', '2': 'd', '3': 'c',
     '4': 'b', '5': 'a', '6': '9', '7': '8',
@@ -23,7 +39,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except KeyError:
         await update.message.reply_text("الصيغة غلط، تأكد من الاسم (مثال: fh_b181e8)")
 
-app = ApplicationBuilder().token("8535910981:AAGTRrfNW72Ozl9e4uGjeXBLrE59cYP2ndQ").build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-app.run_polling()
+keep_alive()
+
+app = ApplicationBuilder().token("853
